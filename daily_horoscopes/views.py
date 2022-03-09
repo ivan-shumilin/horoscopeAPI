@@ -12,7 +12,9 @@ import calendar, datetime
 class GetForecastInfoView(APIView):
     def get(self, request):
         # Извлекаем набор всех записей из таблицы Forecast
-        queryset = Forecast.objects.get(day=today)
+        today = str.lower(calendar.day_name[datetime.datetime.today().isoweekday()])
+        # queryset = Forecast.objects.get(day=today)
+        queryset = Forecast.objects.filter(day=today)
         # Создаём сериалайзер для извлечённого наборa записей
         serializer_for_queryset = ForecastSerializer(
             instance=queryset,  # Передаём набор записей
