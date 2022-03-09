@@ -9,10 +9,12 @@
     <link rel="shortcut icon" href="{% static 'css/img/favicon.ico' %}">
     <title>Гороскоп дня</title>
 </head>
-<body>
-  <h1>Гороскоп дня</h1>
-    {% for forecast in list_of_forecast %}
-    <p>{{ forecast }}</p>
-    {% endfor %}
+<body style="margin-left:80px; margin-right:400px">
+    <h1>Гороскоп дня</h1>
+    <ul>
+        <li>{{ today }}</li>
+        <li><p>{{ list_of_forecast.day }}</p></li>
+        <li><p style="width=50%">{{ list_of_forecast.description|linebreaksbr }}</p></li>
+    </ul>
 </body>
 </html>

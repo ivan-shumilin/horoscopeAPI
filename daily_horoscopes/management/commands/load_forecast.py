@@ -20,6 +20,7 @@ class Command(BaseCommand):  # https://docs.djangoproject.com/en/4.0/howto/custo
         to_create = []  # плохая практика обращатьтся к базе в цикле.
         for forecast in forecasts:
             to_create.append(Forecast(
-                forecast=forecast['forecast'],
+                day=forecast['day'],
+                description=forecast['description'],
                 ))
         Forecast.objects.bulk_create(to_create)  # одним действием отправляем все в базу
