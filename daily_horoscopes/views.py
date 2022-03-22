@@ -25,7 +25,7 @@ class GetForecastInfoView(APIView):
 
 def index(request):
     """
-    Контроллер для отображения на главной странице списка всех записей.
+    Функция для отображения на главной странице списка всех записей.
     """
     today = str.lower(calendar.day_name[datetime.datetime.today().isoweekday()])
     list_of_forecast = Forecast.objects.get(day=today)

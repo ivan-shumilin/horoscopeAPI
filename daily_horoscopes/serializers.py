@@ -2,5 +2,5 @@ from rest_framework import serializers
 
 
 class ForecastSerializer(serializers.Serializer):
-    day = serializers.CharField(max_length=5000)
+    sing = serializers.CharField(max_length=5000)
     description = serializers.CharField(max_length=5000)
