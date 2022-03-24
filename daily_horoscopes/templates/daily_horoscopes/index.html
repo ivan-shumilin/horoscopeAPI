@@ -13,8 +13,10 @@
     <h1>Гороскоп дня</h1>
     <ul>
         <li>{{ today }}</li>
-        <li><p>{{ list_of_forecast.day }}</p></li>
-        <li><p style="width=50%">{{ list_of_forecast.description|linebreaksbr }}</p></li>
+        {% for forecast in list_of_forecast %}
+            <li><h2>{{ forecast.sing }}</h2></li>
+            <li><p style="width=50%">{{ forecast.description|linebreaksbr }}</p></li>
+        {% endfor %}
     </ul>
 </body>
 </html>

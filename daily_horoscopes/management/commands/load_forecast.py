@@ -5,7 +5,6 @@ from django.db import transaction
 from django.utils.dateparse import parse_date
 
 from daily_horoscopes.models import Forecast
-from daily_horoscopes.management.commands.parsing import parsing
 
 import fake_useragent
 import requests
