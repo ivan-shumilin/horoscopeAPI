@@ -1,0 +1,27 @@
+{% extends "base_generic.html" %}
+{% block sidebar %}
+<p>{{ user }}</p>
+{% for token in tokens %}
+    <p>{{ token.user }}</p>
+    <p>{{ token.key }}</p>
+{% endfor %}
+{% endblock %}
+{% block content %}
+    <h1>horoscopeAPI</h1>
+    <p>Сервис по предоставлению ежедневного гороскопа для знаков зодиака по API</p>
+    <p>Сервис работает на Django Rest Framework</p>
+    <h2>Для получения гороскопа необходимо:</h2>
+    <ul>
+        <li>Зарегистрироваться на сайте <a href="">Регистрация</a></li>
+        <li>Сохранить полученный токен</li>
+        <li>Отправить get-запрос на http://127.0.0.1:8000/api/forecast/</li>
+        <li>В Header запроса указать Authorization: Token (полученный токен) </li>
+    </ul>
+    <h3>Пример для python:</h3>
+    <code>
+    import requests <br>
+    url = 'https://intense-badlands-65950.herokuapp.com/api/forecast/'  # Полный адрес эндпоинта <br>
+    auth=('user', 'pass') <br>
+    response = requests.get(url, auth)  # Делаем GET-запрос
+    </code>
+{% endblock %}

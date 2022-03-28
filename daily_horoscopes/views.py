@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Forecast
+from .forms import CreateUsersForms
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -10,14 +11,17 @@ import calendar, datetime
 
 import json
 
-
 from django.db import transaction
 from django.utils.dateparse import parse_date
-
 
 import fake_useragent
 import requests
 from bs4 import BeautifulSoup
+
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+from django.views.decorators.csrf import csrf_exempt  # потом убрать
 
 
 def parsing():
@@ -44,7 +48,6 @@ def parsing():
         forecast_item['description'] = desc.find('p').get_text()
         forecasts.append(forecast_item.copy())
     return forecasts
-
 
 
 @transaction.atomic  # инструмент управления транзакциями базы данных
@@ -88,16 +91,51 @@ def index(request):
     """
     Функция для отображения на главной странице списка всех записей.
     """
-    today = str.lower(calendar.day_name[datetime.datetime.today().isoweekday()])
+
+    # today = str.lower(calendar.day_name[datetime.datetime.today().isoweekday()])
+    # if request.method == 'POST':
+    #     form = CreateUsersForms(request.POST)
+    #     if form.is_valid():
+    #         payload = {
+    #             'email': form.cleaned_data['email'],
+    #             'username': form.cleaned_data['username'],
+    #             'password': form.cleaned_data['password'],
+    #         }
+    #         headers = {'content-type': 'application/json'}
+    #         return requests.post('http://127.0.0.1:8000/api/v1/auth/users', headers=headers, data=payload)
+    # form = CreateUsersForms()
+    url = 'http://127.0.0.1:8000/auth/token/login/'
+    headers = {'content-type': 'application/json'}
+    payload = {
+        'username': 'r',
+        'password': 'qwerqwerqewrqweasd',
+    }
+    token_test = requests.post(url, headers=headers, json=payload)
+    tokens = Token.objects.all()
     list_of_forecast = Forecast.objects.all()
     context = {'list_of_forecast': list_of_forecast,
                'today': datetime.date.today(),
-              }
+               'tokens': tokens,
+               }
     return render(
         request=request,
-        template_name='daily_horoscopes/index.html',
+        template_name='index.html',
         context=context
     )
 
+# def createser(request):
+#     form = CreateUsersForms()
+#     context = {'form': form}
+#     return render(
+#         request=request,
+#         template_name='index.html',
+#         context=context
+#     )
+
+
 # Какой сегодня день недели
 # calendar.day_name[datetime.datetime.today().isoweekday()]
+
+# "email": "r@mail.com",
+# "username": "r",
+# "password": "qwerqwerqewrqweasd"
