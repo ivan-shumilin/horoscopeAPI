@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Forecast
-from .forms import CreateUsersForms
+from .forms import UserRegistrationForm
+
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -64,12 +65,6 @@ def load_forecast():
     Forecast.objects.bulk_create(to_create)
 
 
-# Представление на основе класса ListCreateAPIView
-# class GetForecastInfoView(generics.ListCreateAPIView):
-#     queryset = Forecast.objects.all()
-#     serializer_class = ForecastSerializer
-
-# Представление на основе класса APIView
 class GetForecastInfoView(APIView):
 
     def get(self, request):
@@ -91,27 +86,6 @@ def index(request):
     """
     Функция для отображения на главной странице списка всех записей.
     """
-
-    # today = str.lower(calendar.day_name[datetime.datetime.today().isoweekday()])
-    # if request.method == 'POST':
-    #     form = CreateUsersForms(request.POST)
-    #     if form.is_valid():
-    #         payload = {
-    #             'email': form.cleaned_data['email'],
-    #             'username': form.cleaned_data['username'],
-    #             'password': form.cleaned_data['password'],
-    #         }
-    #         headers = {'content-type': 'application/json'}
-    #         return requests.post('http://127.0.0.1:8000/api/v1/auth/users', headers=headers, data=payload)
-    # form = CreateUsersForms()
-    url = 'http://127.0.0.1:8000/auth/token/login/'
-    headers = {'content-type': 'application/json'}
-    payload = {
-        'username': 'r',
-        'password': 'qwerqwerqewrqweasd',
-    }
-    token_test = requests.post(url, headers=headers, json=payload)
-    tokens = Token.objects.all()
     list_of_forecast = Forecast.objects.all()
     context = {'list_of_forecast': list_of_forecast,
                'today': datetime.date.today(),
@@ -123,19 +97,20 @@ def index(request):
         context=context
     )
 
-# def createser(request):
-#     form = CreateUsersForms()
-#     context = {'form': form}
-#     return render(
-#         request=request,
-#         template_name='index.html',
-#         context=context
-#     )
 
-
-# Какой сегодня день недели
-# calendar.day_name[datetime.datetime.today().isoweekday()]
-
-# "email": "r@mail.com",
-# "username": "r",
-# "password": "qwerqwerqewrqweasd"
+def register(request):
+    if request.method == 'POST':
+        user_form = UserRegistrationForm(request.POST)
+        if user_form.is_valid():
+            url = 'http://127.0.0.1:8000/api/v1/auth/users/'
+            headers = {'content-type': 'application/json'}
+            payload = {
+                'email': user_form.cleaned_data['email'],
+                'username': user_form.cleaned_data['username'],
+                'password': user_form.cleaned_data['password'],
+            }
+            requests.post(url, headers=headers, json=payload)
+            return render(request, 'registration/register_done.html', {'new_user': user_form.cleaned_data})
+    else:
+        user_form = UserRegistrationForm()
+    return render(request, 'registration/register.html', {'user_form': user_form})

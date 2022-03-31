@@ -5,6 +5,11 @@
     <p>{{ token.user }}</p>
     <p>{{ token.key }}</p>
 {% endfor %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Регистрация</button>
+</form>
 {% endblock %}
 {% block content %}
     <h1>horoscopeAPI</h1>

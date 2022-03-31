@@ -20,8 +20,9 @@ from django.urls import path, include, re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('daily_horoscopes.urls')),
-    path('api/v1/auth/', include('djoser.urls')),  # new
+    path('api/v1/auth/', include('djoser.urls')),
     re_path('auth/', include('djoser.urls.authtoken')),
+
 ]
 
 urlpatterns += [
