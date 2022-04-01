@@ -54,7 +54,6 @@ def parsing():
 def load_forecast():
     Forecast.objects.all().delete()  # очищаем базу данных перед тем как заполнить таблицу
     forecasts = parsing()
-    print(forecasts)
     to_create = []
     for forecast in forecasts:
         to_create.append(Forecast(
