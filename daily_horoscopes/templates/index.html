@@ -1,23 +1,13 @@
 {% extends "base_generic.html" %}
-{% block sidebar %}
-<p>{{ user }}</p>
-{% for token in tokens %}
-    <p>{{ token.user }}</p>
-    <p>{{ token.key }}</p>
-{% endfor %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Регистрация</button>
-</form>
-{% endblock %}
 {% block content %}
     <h1>horoscopeAPI</h1>
-    <p>Сервис по предоставлению ежедневного гороскопа для знаков зодиака по API</p>
-    <p>Сервис работает на Django Rest Framework</p>
+    <ul style="list-style-type: none;">
+        <li>Сервис по предоставлению ежедневного гороскопа для знаков зодиака по API</li>
+        <li>Сервис работает на Django Rest Framework</li>
+    </ul>
     <h2>Для получения гороскопа необходимо:</h2>
-    <ul>
-        <li>Зарегистрироваться на сайте <a href="">Регистрация</a></li>
+    <ul style="list-style-type: none;">
+        <li>Зарегистрироваться на сайте <a href="{% url 'register' %}">Регистрация</a></li>
         <li>Сохранить полученный токен</li>
         <li>Отправить get-запрос на http://127.0.0.1:8000/api/forecast/</li>
         <li>В Header запроса указать Authorization: Token (полученный токен) </li>

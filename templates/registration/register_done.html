@@ -3,6 +3,6 @@
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
-    <h1>Welcome {{ new_user.username }}!</h1>
-    <p>Your account has been successfully created. Now you can <a href="">log in</a>.</p>
+    <p><strong>Добро пожаловать {{ new_user.username }}!</strong></p>
+    <p>Для получения токена необходимо авторизоваться <a href="{% url 'login' %}">Войти</a>.</p>
 {% endblock %}

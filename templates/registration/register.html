@@ -1,13 +1,27 @@
 {% extends "base_generic.html" %}
 
-{% block title %}Create an account{% endblock %}
+{% block title %}Регистрация{% endblock %}
 
 {% block content %}
-    <h1>Create an account</h1>
-    <p>Please, sign up using the following form:</p>
-    <form action="." method="post">
-        {{ user_form.as_p }}
-        {% csrf_token %}
-        <p><input type="submit" value="Create my account"></p>
-    </form>
+<div class="col-md-4 offset-md-4">
+    <h2 class="text-center">Регистрация</h2>
+
+<!--    <form action="." method="post">-->
+<!--        {{ user_form.as_p }}-->
+<!--        {% csrf_token %}-->
+<!--        <p><input type="submit" value="Create my account"></p>-->
+<!--    </form>-->
+<form class="form-signin" method="post">
+    {% csrf_token %}
+    <div style="color: #ab2437;">{{ form.non_field_errors }}</div>
+    {% for f in user_form %}
+        <label class="sr-only" for="{{ f.id_for_label }}">
+            {{f.label}}:
+        </label>
+            {{ f }}
+    <div style="color: #ab2437;">{{ f.errors }}</div>
+    {% endfor %}
+    <button class="btn btn-xl btn-primary btn-block" type="submit" style="margin-top: 15px;">Зарегистрироваться</button>
+</form>
+</div>
 {% endblock %}

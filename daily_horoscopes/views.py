@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Forecast
-from .forms import UserRegistrationForm
-
+from .forms import UserRegistrationForm, UserloginForm
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -21,8 +20,8 @@ from bs4 import BeautifulSoup
 
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-
-from django.views.decorators.csrf import csrf_exempt  # потом убрать
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import authenticate, login
 
 
 def parsing():
@@ -56,7 +55,7 @@ def load_forecast():
     Forecast.objects.all().delete()  # очищаем базу данных перед тем как заполнить таблицу
     forecasts = parsing()
     print(forecasts)
-    to_create = []  # плохая практика обращатьтся к базе в цикле.
+    to_create = []
     for forecast in forecasts:
         to_create.append(Forecast(
             sing=forecast['sing'],
@@ -89,7 +88,6 @@ def index(request):
     list_of_forecast = Forecast.objects.all()
     context = {'list_of_forecast': list_of_forecast,
                'today': datetime.date.today(),
-               'tokens': tokens,
                }
     return render(
         request=request,
@@ -114,3 +112,50 @@ def register(request):
     else:
         user_form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'user_form': user_form})
+
+def get_token(username, password):
+    response = {
+        'token': None,
+        'error': None
+    }
+    url = 'http://127.0.0.1:8000/auth/token/login/'
+    headers = {'content-type': 'application/json'}
+    payload = {
+        'username': username,
+        'password': password,
+
+    }
+    token = requests.post(url, headers=headers, json=payload).text
+    token = token.split('"')[3]
+    if len(token) != 40:
+        response['error'] = token
+    else:
+        response['token'] = token
+    return response
+
+
+def user_login(request):
+    errors = None
+    if request.method == 'POST':
+        user_form = UserloginForm(request.POST)
+        user = authenticate(username=user_form.data['username'],
+                            password=user_form.data['password'])
+        if user is not None:
+            login(request, user)
+            response = get_token(user_form.data['username'], user_form.data['password'])
+            return render(request, 'profile.html',
+                          {'new_user': user_form.data, 'response': response})
+        else:
+            errors = 'Пользователя с таким именем и паролем не существует'
+    else:
+        user_form = UserloginForm()
+    return render(request, 'registration/login.html', {'user_form': user_form,
+                                                       'errors': errors})
+
+
+def profile(request):
+    return render(
+        request=request,
+        template_name='profile.html',
+        context=context
+    )

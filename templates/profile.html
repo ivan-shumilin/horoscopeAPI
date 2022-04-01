@@ -1,6 +1,11 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-
-
+<div class="col-md-8 offset-md-2">
+    {% if response.error is None %}
+        <p class="lead text-center" style="border: 1px solid #000;">Ваш токен:  {{ response.token }}</p>
+    {% else %}
+        <p class="lead text-center" style="border: 1px solid #000;">Ошибка:  {{ response.error }}</p>
+    {% endif %}
+</div>
 {% endblock %}
