@@ -100,7 +100,7 @@ def register(request):
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
-            url = 'http://127.0.0.1:8000/api/v1/auth/users/'
+            url = 'https://intense-badlands-65950.herokuapp.com/api/v1/auth/users/'
             headers = {'content-type': 'application/json'}
             payload = {
                 'email': user_form.cleaned_data['email'],
@@ -118,7 +118,7 @@ def get_token(username, password):
         'token': None,
         'error': None
     }
-    url = 'http://127.0.0.1:8000/auth/token/login/'
+    url = 'https://intense-badlands-65950.herokuapp.com/auth/token/login/'
     headers = {'content-type': 'application/json'}
     payload = {
         'username': username,
