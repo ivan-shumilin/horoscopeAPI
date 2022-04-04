@@ -72,9 +72,6 @@ def load_forecast():
     Forecast.objects.bulk_create(to_create)
 
 
-
-
-
 class GetForecastInfoView(APIView):
 
     def get(self, request):
@@ -107,6 +104,7 @@ def index(request):
 
 
 def register(request):
+    errors = ''
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
@@ -117,11 +115,15 @@ def register(request):
                 'username': user_form.cleaned_data['username'],
                 'password': user_form.cleaned_data['password'],
             }
-            requests.post(url, headers=headers, json=payload)
-            return render(request, 'registration/register_done.html', {'new_user': user_form.cleaned_data})
+            response = requests.post(url, headers=headers, json=payload).text
+            if payload['username'] in response:  #если имя пользователя есть в ответе регестрация прошла успешно
+                return render(request, 'registration/register_done.html', {'new_user': user_form.cleaned_data})
+            else:
+                errors = response.split('"')[3]
     else:
         user_form = UserRegistrationForm()
-    return render(request, 'registration/register.html', {'user_form': user_form})
+    return render(request, 'registration/register.html', {'user_form': user_form, 'errors': errors})
+
 
 def get_token(username, password):
     response = {
