@@ -72,12 +72,14 @@ def load_forecast():
     Forecast.objects.bulk_create(to_create)
 
 
+
+
+
 class GetForecastInfoView(APIView):
 
     def get(self, request):
         # если в базе есть запись созданная сегодня берем данные с модели
         # если нет парсим и записываем новые данные в модель
-        date_last_parse = Forecast.objects.all()[0].date_create
         if have_forecast_today():
             queryset = Forecast.objects.all()
         else:
