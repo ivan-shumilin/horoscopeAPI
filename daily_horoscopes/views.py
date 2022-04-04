@@ -50,6 +50,15 @@ def parsing():
     return forecasts
 
 
+def have_forecast_today():
+    """ Вернет True если есть прогноз с сегодняшний датой, иначе False """
+    if len(Forecast.objects.filter(sing='general')) != 0:
+        if datetime.date.today() == Forecast.objects.filter(sing='general')[0].date_create:
+            return True
+    else:
+        return False
+
+
 @transaction.atomic  # инструмент управления транзакциями базы данных
 def load_forecast():
     Forecast.objects.all().delete()  # очищаем базу данных перед тем как заполнить таблицу
@@ -69,7 +78,7 @@ class GetForecastInfoView(APIView):
         # если в базе есть запись созданная сегодня берем данные с модели
         # если нет парсим и записываем новые данные в модель
         date_last_parse = Forecast.objects.all()[0].date_create
-        if datetime.date.today() == date_last_parse:
+        if have_forecast_today():
             queryset = Forecast.objects.all()
         else:
             # парсим и записываем
