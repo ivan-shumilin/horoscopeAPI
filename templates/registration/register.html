@@ -21,7 +21,11 @@
             {{ f }}
     <div style="color: #ab2437;">{{ f.errors }}</div>
     {% endfor %}
-    <div style="color: #ab2437;">{{ errors }}</div>
+    <div style="color: #ab2437;">
+        {% for error in errors %}
+            {{ error|cut:"['"|cut:"']"  }}
+        {% endfor %}
+    </div>
     <button class="btn btn-xl btn-primary btn-block" type="submit" style="margin-top: 15px;">Зарегистрироваться</button>
 </form>
 </div>

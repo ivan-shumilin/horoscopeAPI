@@ -13,7 +13,6 @@ import json
 
 from django.db import transaction
 from django.utils.dateparse import parse_date
-
 import fake_useragent
 import requests
 from bs4 import BeautifulSoup
@@ -25,9 +24,11 @@ from django.contrib.auth import authenticate, login
 
 
 def parsing():
-    """ Парсинг гороскопа  """
-    # меняем каждый раз user agent
-    user = fake_useragent.UserAgent().random
+    """
+     Парсинг гороскопа.
+     Возврещает список который содержит словари с гороскопом для каждого знака.
+    """
+    user = fake_useragent.UserAgent().random  # меняем каждый раз user agent
     header = {'user-agent': user}
     link = 'https://www.astrocentr.ru/index.php?przd=horoe&str=index'
     forecast_item = {}
@@ -40,8 +41,7 @@ def parsing():
     forecast_item['description'] = block.find('p').get_text()
     forecasts.append(forecast_item.copy())
 
-    # парсим ежедневный прогноз для каждого знака зодиака
-    for i in range(1, 13):
+    for i in range(1, 13):  # парсим ежедневный прогноз для каждого знака зодиака
         id = 'horo' + str(i)
         desc = soup.find('div', id=id)
         forecast_item['sing'] = desc.find('legend', class_="uv_legend").get_text()
@@ -63,12 +63,14 @@ def have_forecast_today():
 def load_forecast():
     Forecast.objects.all().delete()  # очищаем базу данных перед тем как заполнить таблицу
     forecasts = parsing()
-    to_create = []
+    to_create = []  # список объектов
     for forecast in forecasts:
         to_create.append(Forecast(
             sing=forecast['sing'],
             description=forecast['description'],
         ))
+    # https://docs.djangoproject.com/en/4.0/ref/models/querysets/#bulk-create
+    # вставляет предоставленный список объектов в базу данных (обычно только 1 запрос, независимо от того, сколько объектов имеется)
     Forecast.objects.bulk_create(to_create)
 
 
@@ -89,25 +91,18 @@ class GetForecastInfoView(APIView):
 
 
 def index(request):
-    """
-    Функция для отображения на главной странице списка всех записей.
-    """
-    list_of_forecast = Forecast.objects.all()
-    context = {'list_of_forecast': list_of_forecast,
-               'today': datetime.date.today(),
-               }
-    return render(
-        request=request,
-        template_name='index.html',
-        context=context
-    )
+    """ Функция для отображения главной страницы. """
+    context = {'today': datetime.date.today(), }
+    return render(request=request, template_name='index.html', context=context)
 
 
 def register(request):
-    errors = ''
+    """ Регистрация нового пользователя"""
+    errors = []
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
+            # делаем запрос на регистрацию нового пользователя (DRF)
             url = 'https://intense-badlands-65950.herokuapp.com/api/v1/auth/users/'
             headers = {'content-type': 'application/json'}
             payload = {
@@ -115,11 +110,12 @@ def register(request):
                 'username': user_form.cleaned_data['username'],
                 'password': user_form.cleaned_data['password'],
             }
-            response = requests.post(url, headers=headers, json=payload).text
-            if payload['username'] in response:  #если имя пользователя есть в ответе регестрация прошла успешно
+            response = requests.post(url, headers=headers, json=payload).json()
+
+            if payload['username'] == response.get('username'):  # если имя пользователя есть в ответе регестрация прошла успешно
                 return render(request, 'registration/register_done.html', {'new_user': user_form.cleaned_data})
             else:
-                errors = response.split('"')[3]
+                errors = list(response.values())
     else:
         user_form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'user_form': user_form, 'errors': errors})
@@ -137,12 +133,13 @@ def get_token(username, password):
         'password': password,
 
     }
-    token = requests.post(url, headers=headers, json=payload).text
-    token = token.split('"')[3]
-    if len(token) != 40:
-        response['error'] = token
-    else:
-        response['token'] = token
+    response_on_json = requests.post(url, headers=headers, json=payload)
+    response_on_python = response_on_json.json()
+    if response_on_python.get("auth_token"):
+        if len(response_on_python["auth_token"]) != 40:
+            response['error'] = response_on_python["auth_token"]
+        else:
+            response['token'] = response_on_python["auth_token"]
     return response
 
 

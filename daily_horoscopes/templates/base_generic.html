@@ -24,6 +24,9 @@
       {% if user.is_authenticated %}
         <li class="nav-item px-2 text-white nav-link mr-2">{{ user }}</li>
         <li class="nav-item px-2">
+          <a class="nav-link text-white" href="{% url 'login' %}">Получить токен</a>
+        </li>
+        <li class="nav-item px-2">
           <a class="nav-link text-white" href="{% url 'logout' %}">Выйти</a>
         </li>
       {% else %}
@@ -38,7 +41,7 @@
     </div>
   </div>
 </nav>
-<div class="container" style="margin-top: 50px">
+<div class="container" style="margin-top: 20px">
     <div class="row">
         {% block content %}
 

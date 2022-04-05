@@ -15,8 +15,12 @@
     <h3>Пример для python:</h3>
     <code>
     import requests <br>
-    url = 'https://intense-badlands-65950.herokuapp.com/api/forecast/'  # Полный адрес эндпоинта <br>
-    auth=('user', 'pass') <br>
-    response = requests.get(url, auth)  # Делаем GET-запрос
+    <br>
+    url = 'https://intense-badlands-65950.herokuapp.com/api/forecast/' <br>
+    headers = {'authorization': 'Token 16058768c24b66535820533ba5fabd3300000000', <br>
+               'content-type': 'application/json', } <br>
+    <br>
+    response = requests.get(url, headers=headers)  <br>
+    response_on_python = response.json() <br>
     </code>
 {% endblock %}
